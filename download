@@ -1,0 +1,30 @@
+# CMake / build outputs
+/build/
+/_build/
+/out/
+/cmake-build-*/
+/CMakeFiles/
+/CMakeCache.txt
+/compile_commands.json
+*.obj
+*.o
+*.pch
+*.pdb
+*.ilk
+*.lib
+*.exp
+*.dll
+*.exe
+*.vst3/
+
+# Visual Studio
+/.vs/
+*.suo
+*.user
+*.VC.db
+*.VC.VC.opendb
+
+# macOS / Windows
+.DS_Store
+Thumbs.db
+Desktop.ini

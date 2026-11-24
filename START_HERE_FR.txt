@@ -1,0 +1,16 @@
+YOU GLITCH SMP 1024 — NOUVEAU DEPOT GITHUB
+
+1) Extraire cette archive.
+2) Ouvrir le dossier extrait.
+3) Sélectionner TOUT ce qu'il contient (Source, Reference, .github, CMakeLists.txt, etc.).
+4) Sur GitHub, créer un dépôt vide.
+5) Envoyer le CONTENU du dossier extrait à la racine du dépôt.
+6) Commit changes.
+7) Ouvrir Actions et attendre le workflow.
+
+ATTENTION : le dossier .github est caché sur Windows. Il doit impérativement être envoyé.
+Ne pas envoyer uniquement le fichier ZIP dans GitHub.
+
+
+BUILD DE DIAGNOSTIC (TEMPORAIRE)
+Cette variante désactive le streaming expérimental et conserve la lecture RAM des samples. Elle génère aussi des symboles PDB pour analyser un éventuel crash. Elle sert uniquement à isoler le démarrage ; elle ne constitue pas une version finale. L'artefact GitHub porte le nom YouGlitch-SMP-1024-DIAGNOSTIC-Windows-x64-PDB. Conserver le fichier PDB avec l'EXE.

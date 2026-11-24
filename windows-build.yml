@@ -1,0 +1,78 @@
+name: YouGlitch SMP 1024 - Diagnostic Windows build
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows:
+    name: Diagnostic build VST3 + Standalone (streaming disabled, PDB symbols)
+    runs-on: windows-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify repository layout
+        shell: pwsh
+        run: |
+          $required = @(
+            "CMakeLists.txt",
+            "Source/PluginProcessor.cpp",
+            "Source/PluginProcessor.h",
+            "Source/PluginEditor.cpp",
+            "Source/PluginEditor.h",
+            "Source/StreamingSampleReader.cpp",
+            "Source/StreamingVoicePool.cpp"
+          )
+          foreach ($file in $required) {
+            if (-not (Test-Path $file -PathType Leaf)) {
+              Write-Error "Fichier requis absent à la racine du dépôt : $file. Téléverse le CONTENU du dossier du projet, pas son dossier parent."
+            }
+          }
+          if (-not (Test-Path ".github/workflows/windows-build.yml" -PathType Leaf)) {
+            Write-Error "Workflow GitHub absent : .github/workflows/windows-build.yml"
+          }
+          Write-Host "Structure du dépôt vérifiée."
+
+      - name: Show toolchain
+        shell: pwsh
+        run: |
+          cmake --version
+          git --version
+
+      - name: Configure CMake and fetch JUCE 8.0.6
+        shell: pwsh
+        run: |
+          cmake -S . -B build -A x64 -DCMAKE_BUILD_TYPE=Release -DJUCE_BUILD_EXAMPLES=OFF -DJUCE_BUILD_EXTRAS=OFF
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Build VST3 and Standalone
+        shell: pwsh
+        run: |
+          cmake --build build --config Release --parallel 2
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: List generated artifacts
+        if: success()
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path build -Recurse -Include *.vst3,*.exe -ErrorAction SilentlyContinue |
+            Select-Object -ExpandProperty FullName
+
+      - name: Upload compiled plugins
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: YouGlitch-SMP-1024-DIAGNOSTIC-Windows-x64-PDB
+          if-no-files-found: error
+          path: |
+            build/YouGlitchSMP1024_artefacts/Release/VST3/**
+            build/YouGlitchSMP1024_artefacts/Release/Standalone/**
+            build/**/*.pdb
